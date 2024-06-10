@@ -2,3 +2,5 @@
 /*.DS_Store
 /.user
 /apikey
+/setup/.venv
+/notebooks/testing_ground.ipynb
