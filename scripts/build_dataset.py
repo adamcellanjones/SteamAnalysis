@@ -50,12 +50,50 @@ def get_game_dates(appid_list):
     for i, appid in enumerate(appid_list):     
         print(f"Getting date for game {appid} ({i+1}/{n_games})")
         url = f"https://store.steampowered.com/api/appdetails?appids={appid}&cc=uk"
-        response = requests.get(url).json()
-        date = response[str(appid)]['data']['release_date']['date']
-        dates.append(date)
+        
+        # try 3 times in case of request issues
+        for i in range(3):
+            try:
+                response = requests.get(url).json()
+                date = response[str(appid)]['data']['release_date']['date']
+                dates.append(date)
+                str_error = None
+            except Exception as e:
+                str_error = str(e)
+            
+            if str_error:
+                time.sleep(2)
+                if i == 2: dates.append(None)
+            else:
+                break
 
         # Rate limit of 200 calls per 5 minutes = 1 call per 1.5 seconds
         time.sleep(1.5)
     
     return pd.DataFrame(zip(appid_list, dates), columns=["appid", "date"])
+
+
+def get_game_genre_tags(appid_list, tag_limit=5):
+    n_games = len(appid_list)
+    genre_tags_data = []
+
+    for i, appid in enumerate(appid_list):     
+        print(f"Getting genre/tags for game {appid} ({i+1}/{n_games})")
+        url = f"https://steamspy.com/api.php?request=appdetails&appid={appid}"
+        response = requests.get(url).json()
+
+        game_genre_tags = {"appid": appid, "genre": response['genre']}
+        for i, tag in enumerate(response['tags']):
+            if i == tag_limit:
+                break
+            game_genre_tags.update({f"tag{i+1}": tag})
+        
+        genre_tags_data.append(game_genre_tags)
+
+        # Rate limit of 1 call per second
+        time.sleep(1)
+    
+    return pd.DataFrame(genre_tags_data)
+
+
 main()
