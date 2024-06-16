@@ -39,11 +39,17 @@ def main():
     # TODO: Collect tags from SteamSpy API
 
 def get_steamspy_all(page):
+    """
+    This function calls the SteamSpy API and returns a given page of the "all games" list as a Pandas dataframe
+    """
     url = f"https://steamspy.com/api.php?request=all&page={page}"
     response = requests.get(url).json()
     return pd.DataFrame(response).T
 
 def get_game_dates(appid_list):
+    """
+    This function returns a Pandas dataframe of release dates for a given list of app IDs 
+    """
     n_games = len(appid_list)
     dates = []
     
@@ -74,6 +80,13 @@ def get_game_dates(appid_list):
 
 
 def get_game_genre_tags(appid_list, tag_limit=5):
+    """
+    This function returns a Pandas dataframe of genres and tags for a given list of app IDs.
+
+    Parameters:
+    appid_list (list): a list of Steam app IDs
+    tag_limit (int): the number of tags to include for each game
+    """
     n_games = len(appid_list)
     genre_tags_data = []
 
