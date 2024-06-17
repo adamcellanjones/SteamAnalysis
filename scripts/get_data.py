@@ -95,7 +95,7 @@ def get_game_dates(appid_list):
         url = f"https://store.steampowered.com/api/appdetails?appids={appid}&cc=uk"
         
         # try 3 times in case of request issues
-        for i in range(3):
+        for j in range(3):
             try:
                 response = requests.get(url).json()
                 date = response[str(appid)]['data']['release_date']['date']
@@ -106,7 +106,7 @@ def get_game_dates(appid_list):
             
             if str_error:
                 time.sleep(2)
-                if i == 2: dates.append(None)
+                if j == 2: dates.append(None)
             else:
                 break
 
@@ -132,15 +132,15 @@ def get_game_tags(appid_list, tag_limit=5):
         url = f"https://steamspy.com/api.php?request=appdetails&appid={appid}"
         
         # try 3 times in case of request issues
-        for i in range(3):
+        for j in range(3):
             try:
                 response = requests.get(url).json()
                 
                 game_tags = {"appid": appid, "genre": response['genre']}
-                for i, tag in enumerate(response['tags']):
-                    if i == tag_limit:
+                for k, tag in enumerate(response['tags']):
+                    if k == tag_limit:
                         break
-                    game_tags.update({f"tag{i+1}": tag})
+                    game_tags.update({f"tag{k+1}": tag})
                 
                 tags_data.append(game_tags)
                 str_error = None
@@ -149,7 +149,7 @@ def get_game_tags(appid_list, tag_limit=5):
 
             if str_error:
                 print("Error raised:", str_error)
-                sleep(2)
+                time.sleep(2)
             else:
                 break
 
