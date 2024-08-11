@@ -4,3 +4,5 @@
 /apikey
 /setup/.venv
 /notebooks/testing_ground.ipynb
+/SteamAnalysis/__pycache__/
+/data/clean/
