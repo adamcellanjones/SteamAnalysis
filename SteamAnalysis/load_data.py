@@ -19,11 +19,20 @@ def load_steam_data():
     # Add a year variable
     games['year'] = games['date'].dt.year
 
+    # Add columns for upper and lower bounds of owners
+    def get_bounds(bin_label):
+        tmp = bin_label.split(" .. ")
+        lb = int(tmp[0].replace(",",""))
+        ub = int(tmp[-1].replace(",",""))
+        return [lb, ub]
+
+    games[['owners_lb', 'owners_ub']] = games['owners'].apply(get_bounds).tolist()
+    
     #Convert owners to ordered category data type
     from pandas.api.types import CategoricalDtype
 
     labels = games['owners'].unique()
-    categories = sorted(labels, key=lambda x: int(x.split(" .. ")[0].replace(",","")))
+    categories = sorted(labels, key=lambda x: get_bounds(x)[0])
 
     cat_type = CategoricalDtype(categories=categories, ordered=True)
     games['owners'] = games['owners'].astype(cat_type)
